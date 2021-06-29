@@ -1,0 +1,48 @@
+name: Release
+on:
+  release:
+    types: 
+      - created
+
+jobs:
+  env:
+    DB_CHANGED: False
+    TEMPLATES_CHANGED: False
+  release:
+    steps:
+      - name: Verify Templates changed
+        uses: tj-actions/verify-changed-files@v7.1
+        id: verify-changed-templates
+        with:
+          files: |
+             templates
+
+      - name: Set TEMPLATES_CHANGED
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        env:
+          TEMPLATES_CHANGED: True
+
+      - name: Verify XXX changed
+        uses: tj-actions/verify-changed-files@v7.1
+        id: verify-changed-db
+        with:
+          files: |
+            classes/data
+
+      - name: Set DB_CHANGED
+        if: steps.verify-changed-db.outputs.files_changed == 'true'
+        env:
+          DB_CHANGED: True
+
+      - name: Render template
+        id: render_template
+        uses: chulomin/render-template@v1.2
+        with:
+          template: release-template.md
+          vars: |
+            templates_changed: ${{ env.TEMPLATES_CHANGED }}
+            db_changed: ${{ env.DB_CHANGED }}
+
+      - name: Showback
+        run: |
+         echo "${{ steps.render_templates.outputs.value }}
