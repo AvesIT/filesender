@@ -19,10 +19,10 @@ jobs:
 
       - name: Set TEMPLATES_CHANGED
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        run: |
-          echo "Templates changed"
         env:
           TEMPLATES_CHANGED: True
+        run: |
+          echo "Templates changed"
 
       - name: Verify XXX changed
         uses: tj-actions/verify-changed-files@v7.1
@@ -33,10 +33,10 @@ jobs:
 
       - name: Set DB_CHANGED
         if: steps.verify-changed-db.outputs.files_changed == 'true'
-        run: |
-          echo "DB changed"
         env:
           DB_CHANGED: True
+        run: |
+          echo "DB changed"
 
       - name: Render template
         id: render_template
