@@ -5,10 +5,10 @@ on:
       - created
 
 jobs:
-  env:
-    DB_CHANGED: False
-    TEMPLATES_CHANGED: False
   release:
+    env:
+      DB_CHANGED: False
+      TEMPLATES_CHANGED: False
     steps:
       - name: Verify Templates changed
         uses: tj-actions/verify-changed-files@v7.1
