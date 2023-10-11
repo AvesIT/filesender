@@ -1,0 +1,51 @@
+---
+name: Detect language changes for a PR and update terms if needed
+on:
+  push:
+    branches:
+      - development3
+    paths:
+      - 'language/**'
+      - '!language/README.md'
+      - '!language/locale.php'
+      - '!language/master/terms.*'
+  pull_request:
+    branches:
+      - development3
+    paths:
+      - 'language/**'
+      - '!language/README.md'
+      - '!language/locale.php'
+      - '!language/master/terms.*'
+
+permissions:
+  contents: write
+
+jobs:
+  update-terms:
+    runs-on: ubuntu-latest
+    env:
+      CI_COMMIT_MESSAGE: Continuous Integration Language Artifacts
+      CI_COMMIT_AUTHOR: Continuous Integration
+    name: Update language terms
+    steps:
+      - name: Checkout code from GitHub
+        uses: actions/checkout@v3
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Generate terms
+        run: scripts/language/generate-terms-list.py language/master/
+
+      - name: Commit Language Artifacts
+        if: github.event_name == 'push'
+        run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "filesender@users.noreply.github.com"
+          git add language/master/terms.txt
+          git add language/master/terms.json
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git push
