@@ -1,0 +1,26 @@
+---
+name: Propagate changed terms to POEditor
+on:
+  push:
+    branches:
+      - development3
+    paths:
+      - 'language/master/terms.*'
+  pull_request:
+    branches:
+      - development3
+    paths:
+      - 'language/master/terms.*'
+
+jobs:
+  update-poeditor:
+    runs-on: ubuntu-latest
+    name: Propagate terms to POEditor via webhook
+
+    steps:
+    - name: Run POEditor import webhook
+      uses: distributhor/workflow-webhook@v3
+      env:
+        webhook_url: ${{ secrets.POEDITOR_IMPORT_WEBHOOK }}
+        webhook_secret: ${{ secrets.POEDITOR_APIKEY }}
+        verbose: true
